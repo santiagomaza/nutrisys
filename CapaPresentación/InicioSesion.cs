@@ -1,5 +1,7 @@
 using CapaNegocios;
 using CapaPresentación.Utils;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace CapaPresentación
 {
@@ -14,7 +16,9 @@ namespace CapaPresentación
             this.ActiveControl = lblTitulo;
             this.MaximizeBox = false;
 
-            lblVersion.Text = Application.ProductVersion;
+            Version appVersion = Assembly.GetExecutingAssembly().GetName().Version;
+
+            lblVersion.Text = "v" + appVersion.Major + "." + appVersion.Minor + "." + appVersion.Build;
         }
         private void btnIniciarSesión_Click(object sender, EventArgs e)
         {

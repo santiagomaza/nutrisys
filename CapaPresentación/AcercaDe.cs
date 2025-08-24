@@ -1,4 +1,6 @@
-﻿namespace CapaPresentación
+﻿using System.Reflection;
+
+namespace CapaPresentación
 {
     public partial class frmAcercaDe : Form
     {
@@ -10,7 +12,9 @@
 
         private void AcercaDe_Load(object sender, EventArgs e)
         {
-            lblVersion.Text = Application.ProductVersion;
+            Version appVersion = Assembly.GetExecutingAssembly().GetName().Version;
+
+            lblVersion.Text = "v" + appVersion.Major + "." + appVersion.Minor + "." + appVersion.Build;
             lblDesarrollador.Text = "SMDev";
         }
 
