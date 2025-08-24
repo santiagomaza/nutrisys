@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<runtime>
+		<AppContextSwitchOverrides value="Switch.System.Windows.Forms.EnableHighDpiAutoResizing=true;Switch.System.Windows.Forms.DoNotScaleForDpiChanges=false" />
+	</runtime>
+	<connectionStrings>
+		<add name="nombrebd"
+			 connectionString="Server={server};Database={db};User Id={userid};Password={pwd};"
+			 providerName="MySql.Data.MySqlClient" />
+	</connectionStrings>
+</configuration>
