@@ -1,4 +1,5 @@
-﻿using CapaNegocios;
+﻿using CapaEntidades;
+using CapaNegocios;
 using CapaPresentación.Utils;
 using System.Data;
 
@@ -146,6 +147,8 @@ namespace CapaPresentación
                 bs.DataSource = dt;
                 dgvPacientes.DataSource = bs;
 
+                dgvPacientes.Columns["DNI"].DefaultCellStyle.Format = "N0";
+
                 foreach (DataGridViewColumn col in dgvPacientes.Columns)
                 {
                     if (columnas.Contains(col.Name))
@@ -178,51 +181,6 @@ namespace CapaPresentación
                 return;
             }
 
-            Int64 dni = Int64.Parse(txtDNI.Text.Trim());
-            string nombre = txtNombre.Text.Trim(), 
-                apellido = txtApellido.Text.Trim(), 
-                localidad = TxtLocalidad.Text.Trim();
-
-            string? calle = TxtCalle.Text.Trim(), 
-                email = txtEmail.Text.Trim(), 
-                obraSocial = string.Empty;
-
-            DateTime fechaNacimiento = dtpFechaNac.Value;
-          
-            long n_telefono = long.Parse(txtTelefono.Text.Trim());
-            int? numeracion = null;
-            string? n_afiliado = txtNAfiliado.Text.Trim();
-            int codigoPais = int.Parse(txtCodigoPais.Text.Trim());
-
-            string codigoPais_str = Convert.ToString(codigoPais), 
-                n_telefono_str = Convert.ToString(n_telefono);
-
-            string telefono_str = string.Join("", codigoPais_str, n_telefono_str);
-
-            long telefono = long.Parse(telefono_str);
-            string sexo = string.Empty;
-            string estadoCivil = cboEstadoCivil.SelectedItem?.ToString();
-            string ocupacion = txtOcupacion.Text.Trim();
-
-            if (rbSexoMasc.Checked)
-            {
-                sexo = rbSexoMasc.Text.ToString().Trim();
-            }
-            else if (rbSexoFem.Checked)
-            {
-                sexo = rbSexoFem.Text.ToString().Trim();
-            }
-
-            if (int.TryParse(TxtAltura.Text.Trim(), out int num))
-            {
-                numeracion = num;
-            }
-
-            if (rbSinObraSocial.Checked)
-                obraSocial = rbSinObraSocial.Text.ToString().Trim();
-            else if(rbObraSocialPAMI.Checked)
-                obraSocial = rbObraSocialPAMI.Text.ToString().Trim();
-
             try
             {
                 Guid idPais = Guid.Empty;
@@ -233,6 +191,16 @@ namespace CapaPresentación
 
                 if (CboProvincia.SelectedValue != null && Guid.TryParse(CboProvincia.SelectedValue.ToString(), out Guid provincia))
                     idProvincia = provincia;
+
+                string? localidad = TxtLocalidad.Text.Trim();
+                string? calle = TxtCalle.Text.Trim();
+
+                long n_telefono = long.Parse(txtTelefono.Text.Trim());
+                int codigoPais = int.Parse(txtCodigoPais.Text.Trim());
+
+                int? numeracion = null;
+
+                long telefono = long.Parse(codigoPais.ToString() + n_telefono.ToString());
 
                 bool hayDatosDomicilio = (!string.IsNullOrWhiteSpace(calle) || numeracion.HasValue || !string.IsNullOrWhiteSpace(localidad)) || idPais != Guid.Empty || idProvincia != Guid.Empty;
 
@@ -253,7 +221,23 @@ namespace CapaPresentación
 
                 bool registrado;
 
-                registrado = paciente.InsertarPaciente(dni, nombre, apellido, fechaNacimiento, telefono, idDomicilio, idPais, n_afiliado, obraSocial, email, out string mensaje, sexo, estadoCivil, ocupacion);
+                Paciente pacienteOBJ = new Paciente(
+                    DNI: Int64.Parse(txtDNI.Text.Trim()),
+                    nombre: txtNombre.Text.Trim(),
+                    apellido: txtApellido.Text.Trim(),
+                    fechaNacimiento: dtpFechaNac.Value,
+                    sexo: rbSexoMasc.Checked ? "Masculino" : "Femenino",
+                    telefono: telefono,
+                    idDomicilio: idDomicilio,
+                    idPais: idPais,
+                    n_Afiliado: txtNAfiliado.Text.Trim(),
+                    obraSocial: rbSinObraSocial.Checked ? "Ninguna" : "PAMI",
+                    email: txtEmail.Text.Trim(),
+                    estadoCivil: cboEstadoCivil.SelectedItem?.ToString(),
+                    ocupacion: txtOcupacion.Text.Trim()
+                );
+
+                registrado = paciente.InsertarPaciente(pacienteOBJ, out string mensaje);
                 MessageBox.Show(mensaje, registrado ? "NutrisysÉxito" : "NutrisysError", MessageBoxButtons.OK);
 
                 if (registrado)
@@ -371,6 +355,17 @@ namespace CapaPresentación
         }
         private void btnEditarPaciente_Click(object sender, EventArgs e)
         {
+            bool validarDNI = Validaciones.ValidacionCampos(txtDNI, errValidarTxtBox, obligatorio: true, numerico: true);
+            bool validarNombre = Validaciones.ValidacionCampos(txtNombre, errValidarTxtBox, obligatorio: true, soloTexto: true);
+            bool validarApellido = Validaciones.ValidacionCampos(txtApellido, errValidarTxtBox, obligatorio: true, soloTexto: true);
+            bool validarCodigoPais = Validaciones.ValidacionCampos(txtCodigoPais, errValidarTxtBox, obligatorio: true, numerico: true);
+            bool validarTelefono = Validaciones.ValidacionCampos(txtTelefono, errValidarTxtBox, obligatorio: true, numerico: true);
+
+            if (!validarDNI || !validarNombre || !validarApellido || !validarCodigoPais || !validarTelefono)
+            {
+                return;
+            }
+
             Guid idPais = Guid.Empty, idProvincia = Guid.Empty;
             Guid? id_domicilio = null;
 
@@ -384,49 +379,29 @@ namespace CapaPresentación
                 idProvincia = provincia;
             }
 
-            string dni_actual = dgvPacientes.CurrentRow.Cells["DNI"].Value?.ToString();
-            string nombre = txtNombre.Text.Trim();
-            string apellido = txtApellido.Text.Trim();
-            string localidad = TxtLocalidad.Text.Trim();
-            string email = txtEmail.Text.Trim();
-            string? obraSocial = string.Empty;
-            string? calle = TxtCalle.Text.Trim();
-            int dni_nuevo = int.Parse(txtDNI.Text.Trim());
-            int codigoPais = int.Parse(txtCodigoPais.Text.Trim());
-            DateTime fechaNacimiento = dtpFechaNac.Value;
-            long n_telefono = long.Parse(txtTelefono.Text.Trim());
-            int? numeracion = int.TryParse(TxtAltura.Text.Trim(), out int n) ? n : null;
-            string? n_afiliado = txtNAfiliado.Text.Trim();
-            string? sexo = string.Empty;
-            string estadoCivil = cboEstadoCivil.SelectedItem?.ToString();
-            string ocupacion = txtOcupacion.Text.Trim();
-
-            string codigoPais_str = Convert.ToString(codigoPais);
-            string n_telefono_str = Convert.ToString(n_telefono);
-
-            string telefono_str = string.Join("", codigoPais_str, n_telefono_str);
-
-            long telefono = long.Parse(telefono_str);
-
-            if (rbSexoMasc.Checked)
-            {
-                sexo = rbSexoMasc.Text.ToString().Trim();
-            }
-            else if (rbSexoFem.Checked)
-            {
-                sexo = rbSexoFem.Text.ToString().Trim();
-            }
-
-            if (rbSinObraSocial.Checked)
-                obraSocial = rbSinObraSocial.Text.ToString().Trim();
-            else if (rbObraSocialPAMI.Checked)
-                obraSocial = rbObraSocialPAMI.Text.ToString().Trim();
-
             try
             {
                 if (dtpFechaNac.Value > DateTime.Now)
                 {
                     MessageBox.Show("No se puede establecer una fecha mayor a la actual", "NutrisysInfo", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
+                }
+
+                string dniSinPuntos = dgvPacientes.CurrentRow.Cells["DNI"].Value?.ToString().Replace(".", "");
+
+                Int64 dni_actual = Convert.ToInt64(dniSinPuntos);
+
+                string localidad = TxtLocalidad.Text.Trim();
+                string? calle = TxtCalle.Text.Trim();
+
+                int codigoPais = int.Parse(txtCodigoPais.Text.Trim());
+                DateTime fechaNacimiento = dtpFechaNac.Value;
+                long n_telefono = long.Parse(txtTelefono.Text.Trim());
+                int? numeracion = int.TryParse(TxtAltura.Text.Trim(), out int n) ? n : null;
+
+                if (!long.TryParse(codigoPais.ToString() + n_telefono.ToString(), out long telefono))
+                {
+                    if (telefono >= 999999999999999999) MessageBox.Show("El número de telefono ingresado no es válido.");
                     return;
                 }
 
@@ -457,7 +432,24 @@ namespace CapaPresentación
                     }
                 }
 
-                paciente.EditarPaciente(dni_nuevo, dni_actual, nombre, apellido, fechaNacimiento, telefono, idPais, id_domicilio, n_afiliado, obraSocial, email, sexo, estadoCivil, ocupacion);
+                Paciente pacienteOBJ = new Paciente(
+                    DNI_Actual: dni_actual,
+                    nuevoDNI: Int64.Parse(txtDNI.Text.Trim()),
+                    nombre: txtNombre.Text.Trim(),
+                    apellido: txtApellido.Text.Trim(),
+                    fechaNacimiento: dtpFechaNac.Value,
+                    sexo: rbSexoMasc.Checked ? "Masculino" : "Femenino",
+                    telefono: telefono,
+                    idDomicilio: id_domicilio,
+                    idPais: idPais,
+                    n_Afiliado: txtNAfiliado.Text.Trim(),
+                    obraSocial: rbSinObraSocial.Checked ? "Ninguna" : "PAMI",
+                    email: txtEmail.Text.Trim(),
+                    estadoCivil: cboEstadoCivil.SelectedItem?.ToString(),
+                    ocupacion: txtOcupacion.Text.Trim()
+                );
+
+                paciente.EditarPaciente(pacienteOBJ);
                 MessageBox.Show("Paciente editado correctamente", "NutrisysExito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 btnAgregarPaciente.Enabled = true;
@@ -469,11 +461,11 @@ namespace CapaPresentación
             }
             catch (ArgumentException argEx)
             {
-                MessageBox.Show(argEx.Message);
+                MessageBox.Show(argEx.Message, "NutrisysError", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ocurrió un error:\n\n" + ex.Message, "NutrisysError", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "NutrisysError", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void ParsearDomicilio(string domicilio)
@@ -609,6 +601,33 @@ namespace CapaPresentación
         {
             this.WindowState = FormWindowState.Minimized;
         }
+        private void txtNAfiliado_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char[] caracteresEspeciales = { '$', '%', '&', '#', '!', '(', ')', '=', '?', '¡', '¿', ';', ',', ':', '"' };
+            char[] letras = Enumerable.Range('A', 26)
+                .Select(x => (char)x)
+                .Concat(Enumerable.Range('a', 26)
+                .Select(x => (char)x))
+                .ToArray();
 
+            if (caracteresEspeciales.Contains(e.KeyChar) || letras.Contains(e.KeyChar))
+            {
+                MessageBox.Show("El número de afiliado no puede contener el caracter ingresado. Intentalo de nuevo", "NutrisysError", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                e.Handled = true;
+                return;
+            }
+        }
+        private void txtTelefono_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (txtTelefono.Text.Length >= 17 && !char.IsControl(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+
+            if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
     }
 }

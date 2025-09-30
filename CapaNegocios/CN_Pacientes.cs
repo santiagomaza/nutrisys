@@ -1,4 +1,5 @@
 ﻿using CapaDatos;
+using CapaEntidades;
 using CapaNegocios.Utils;
 using System.Data;
 using System.Net;
@@ -29,31 +30,35 @@ namespace CapaNegocios
         {
             return opacientes.FiltrarPaciente(paciente);
         }
-        public bool InsertarPaciente(Int64 dni, string nombre, string apellido, DateTime fechaNacimiento, long telefono, Guid domicilio, Guid pais, string? n_afiliado, string obraSocial, string email, out string mensaje, string sexo, string estadoCivil, string ocupacion)
+        public bool InsertarPaciente(Paciente paciente, out string mensaje)
         {
-            ValidarPaciente.Validar(nombre, dni, email, n_afiliado);
+            ValidarPaciente.Validar(paciente);
 
             Guid idPaciente = Guid.NewGuid();
             DateTime fechaRegistro = DateTime.Now;
 
-            if (opacientes.PacienteRegistrado(dni))
+            if (opacientes.PacienteRegistrado(paciente.NuevoDNI))
             {
-                mensaje = $"El paciente con DNI {dni} ya esta registrado en la base de datos";
+                mensaje = $"El paciente con DNI {paciente.NuevoDNI} ya esta registrado en la base de datos";
                 return false;
             }
 
-            opacientes.InsertarPaciente(idPaciente, dni, nombre, apellido, fechaNacimiento, telefono, fechaRegistro, domicilio, pais, n_afiliado , obraSocial, email, sexo, estadoCivil, ocupacion);
+            opacientes.InsertarPaciente(paciente);
 
-            mensaje = "Paciente registrado correctamente";
+            mensaje = $"El paciente {paciente.Nombre.ToUpper()} {paciente.Apellido.ToUpper()} ha sido dado de alta exitosamente en la base de datos";
             return true;
         }
-        public void EditarPaciente(int dni_nuevo, string dni_actual, string nombre, string apellido, DateTime fechaNacimiento, long telefono, Guid id_Pais, Guid? idDomicilio, string? n_afiliado, string obraSocial, string email, string sexo, string estadoCivil, string ocupacion)
+        public void EditarPaciente(Paciente paciente)
         {
-            ValidarPaciente.Validar(nombre, dni_nuevo, email, n_afiliado);
+            ValidarPaciente.Validar(paciente);
 
-            string dniSinPuntos = dni_actual.Replace(".", "");
+            string dniStr = paciente.DNIActual.ToString();
 
-            opacientes.EditarPaciente(dni_nuevo, int.Parse(dniSinPuntos), nombre, apellido, fechaNacimiento, telefono, id_Pais, idDomicilio, n_afiliado, obraSocial, email, sexo, estadoCivil, ocupacion);
+            string dniSinPuntos = dniStr.Replace(".", "");
+
+            paciente.DNIActual = Convert.ToInt64(dniSinPuntos);
+
+            opacientes.EditarPaciente(paciente);
         }
     }
 }

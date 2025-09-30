@@ -515,6 +515,7 @@
             txtNAfiliado.Name = "txtNAfiliado";
             txtNAfiliado.Size = new Size(146, 25);
             txtNAfiliado.TabIndex = 24;
+            txtNAfiliado.KeyPress += txtNAfiliado_KeyPress;
             // 
             // lblNAfiliado
             // 
@@ -679,6 +680,7 @@
             txtTelefono.Name = "txtTelefono";
             txtTelefono.Size = new Size(153, 25);
             txtTelefono.TabIndex = 3;
+            txtTelefono.KeyPress += txtTelefono_KeyPress;
             // 
             // txtApellido
             // 

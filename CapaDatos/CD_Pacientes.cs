@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using MySql.Data.MySqlClient;
+using CapaEntidades;
 
 namespace CapaDatos
 {
@@ -8,18 +9,18 @@ namespace CapaDatos
         MySqlDataReader lector;
         public DataTable ListarPacientes()
         {
-            DataTable tabla = new DataTable();
-            using (MySqlConnection conexion = new MySqlConnection(ConexionBD.Cadena))
+            DataTable tabla = new();
+            using (MySqlConnection conexion = new(ConexionBD.Cadena))
             {
                 try
                 {
                     conexion.Open();
 
-                    string storedProcedure = "ListarPacientes";
+                    string storedProcedure = "SELECT * FROM nutrisys.ListarPacientes;";
 
                     MySqlCommand cmd = new MySqlCommand(storedProcedure, conexion);
 
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandType = CommandType.Text;
 
                     lector = cmd.ExecuteReader();
 
@@ -78,11 +79,11 @@ namespace CapaDatos
             {
                 conn.Open();
 
-                string query = "SELECT ID_Paciente, UPPER(CONCAT(Apellido, ', ', Nombre, ' ', '(', FORMAT(DNI,0,'es_AR'), ')')) AS Paciente FROM Pacientes WHERE (UPPER(Apellido) LIKE UPPER(@paciente) OR UPPER(Nombre) LIKE UPPER(@paciente));";
+                string query = "SELECT ID_Paciente, UPPER(CONCAT(Apellido, ', ', Nombre, ' ', '(', FORMAT(DNI,0,'es_AR'), ')')) AS Paciente FROM nutrisys.Pacientes WHERE (UPPER(Apellido) LIKE UPPER(@paciente) OR UPPER(Nombre) LIKE UPPER(@paciente));";
 
                 MySqlCommand cmd = new(query, conn);
 
-                cmd.Parameters.AddWithValue("@paciente", "%" + paciente + "%");
+                cmd.Parameters.AddWithValue("@paciente", paciente + "%");
 
                 lector = cmd.ExecuteReader();
 
@@ -104,7 +105,7 @@ namespace CapaDatos
             {
                 conn.Open();
 
-                string query = "SELECT FORMAT(P.DNI, 0, 'es_AR') AS DNI, UPPER(CONCAT(P.Apellido, ', ', P.Nombre)) AS Paciente, DATE_FORMAT(HC.FechaConsulta, '%d/%m/%Y') AS Consulta FROM Pacientes P JOIN HistoriasClinicas HC ON HC.Id_Paciente = P.ID_Paciente WHERE P.Obra_Social = 'PAMI' AND HC.FechaConsulta BETWEEN @fechaInicio AND @fechaFin ORDER BY HC.FechaConsulta ASC;";
+                string query = "SELECT FORMAT(P.DNI, 0, 'es_AR') AS DNI, UPPER(CONCAT(P.Apellido, ', ', P.Nombre)) AS Paciente, DATE_FORMAT(HC.FechaConsulta, '%d/%m/%Y') AS Consulta FROM nutrisys.Pacientes P JOIN nutrisys.HistoriasClinicas HC ON HC.Id_Paciente = P.ID_Paciente WHERE P.Obra_Social = 'PAMI' AND HC.FechaConsulta BETWEEN @fechaInicio AND @fechaFin ORDER BY HC.FechaConsulta ASC;";
 
                 MySqlCommand cmd = new(query, conn);
 
@@ -132,7 +133,7 @@ namespace CapaDatos
             }
             return pacientePAMI;
         }
-        public void InsertarPaciente(Guid id, Int64 dni, string nombre, string apellido, DateTime fechaNacimiento, long telefono, DateTime fechaRegistro, Guid id_domicilio, Guid id_Pais, string? n_afiliado,string obraSocial, string email, string sexo, string estadoCivil, string ocupacion)
+        public void InsertarPaciente(Paciente paciente)
         {
             using (MySqlConnection conexion = new MySqlConnection(ConexionBD.Cadena))
             {
@@ -146,30 +147,30 @@ namespace CapaDatos
                     
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@ID_Paciente", id.ToString());
-                    cmd.Parameters.AddWithValue("@DNI", dni);
-                    cmd.Parameters.AddWithValue("@Nombre", nombre);
-                    cmd.Parameters.AddWithValue("@Apellido", apellido);
-                    cmd.Parameters.AddWithValue("@FechaNacimiento", fechaNacimiento);
-                    cmd.Parameters.AddWithValue("@Telefono", telefono);
-                    cmd.Parameters.AddWithValue("@FechaRegistro", fechaRegistro);
+                    cmd.Parameters.AddWithValue("@ID_Paciente", paciente.IdPaciente.ToString());
+                    cmd.Parameters.AddWithValue("@DNI", paciente.NuevoDNI);
+                    cmd.Parameters.AddWithValue("@Nombre", paciente.Nombre);
+                    cmd.Parameters.AddWithValue("@Apellido", paciente.Apellido);
+                    cmd.Parameters.AddWithValue("@FechaNacimiento", paciente.FechaNacimiento);
+                    cmd.Parameters.AddWithValue("@Telefono", paciente.Telefono);
+                    cmd.Parameters.AddWithValue("@FechaRegistro", paciente.FechaRegistro);
 
-                    if (id_domicilio == Guid.Empty)
+                    if (paciente.IdDomicilio == Guid.Empty)
                         cmd.Parameters.AddWithValue("@Id_Domicilio", DBNull.Value);
                     else
-                        cmd.Parameters.AddWithValue("@Id_Domicilio", id_domicilio);
+                        cmd.Parameters.AddWithValue("@Id_Domicilio", paciente.IdDomicilio);
 
-                    if (id_Pais == Guid.Empty)
+                    if (paciente.IdPais == Guid.Empty)
                         cmd.Parameters.AddWithValue("@Id_Pais", DBNull.Value);
                     else
-                        cmd.Parameters.AddWithValue("@Id_Pais", id_Pais);
+                        cmd.Parameters.AddWithValue("@Id_Pais", paciente.IdPais);
 
-                    cmd.Parameters.AddWithValue("@N_Afiliado", n_afiliado);
-                    cmd.Parameters.AddWithValue("@Obra_Social", obraSocial);
-                    cmd.Parameters.AddWithValue("@Email", email);
-                    cmd.Parameters.AddWithValue("@Sexo", sexo);
-                    cmd.Parameters.AddWithValue("@EstadoCivil", estadoCivil);
-                    cmd.Parameters.AddWithValue("@Ocupacion", ocupacion);
+                    cmd.Parameters.AddWithValue("@N_Afiliado", paciente.N_Afiliado);
+                    cmd.Parameters.AddWithValue("@Obra_Social", paciente.ObraSocial);
+                    cmd.Parameters.AddWithValue("@Email", paciente.Email);
+                    cmd.Parameters.AddWithValue("@Sexo", paciente.Sexo);
+                    cmd.Parameters.AddWithValue("@EstadoCivil", paciente.EstadoCivil);
+                    cmd.Parameters.AddWithValue("@Ocupacion", paciente.Ocupacion);
 
                     cmd.ExecuteNonQuery();
                 }
@@ -179,7 +180,7 @@ namespace CapaDatos
                 }
             }
         }
-        public void EditarPaciente(Int64 dni_nuevo, Int64 dni_actual, string nombre, string apellido, DateTime fechaNacimiento, long telefono, Guid id_Pais, Guid? idDomicilio, string? n_afiliado, string obraSocial,string email, string sexo, string estadoCivil, string ocupacion)
+        public void EditarPaciente(Paciente paciente)
         {
             using(MySqlConnection conn = new MySqlConnection(ConexionBD.Cadena))
             {
@@ -193,35 +194,35 @@ namespace CapaDatos
 
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@p_DNI_nuevo", dni_nuevo);
-                    cmd.Parameters.AddWithValue("@p_dni_actual", dni_actual);
-                    cmd.Parameters.AddWithValue("@p_Nombre", nombre);
-                    cmd.Parameters.AddWithValue("@p_Apellido", apellido);
-                    cmd.Parameters.AddWithValue("@p_FechaNacimiento", fechaNacimiento);
-                    cmd.Parameters.AddWithValue("@p_Telefono", telefono);
+                    cmd.Parameters.AddWithValue("@p_DNI_nuevo", paciente.NuevoDNI);
+                    cmd.Parameters.AddWithValue("@p_dni_actual", paciente.DNIActual);
+                    cmd.Parameters.AddWithValue("@p_Nombre", paciente.Nombre);
+                    cmd.Parameters.AddWithValue("@p_Apellido", paciente.Apellido);
+                    cmd.Parameters.AddWithValue("@p_FechaNacimiento", paciente.FechaNacimiento);
+                    cmd.Parameters.AddWithValue("@p_Telefono", paciente.Telefono);
 
-                    if (idDomicilio == Guid.Empty)
+                    if (paciente.IdDomicilio == Guid.Empty)
                         cmd.Parameters.AddWithValue("@p_Id_Domicilio", DBNull.Value);
                     else
-                        cmd.Parameters.AddWithValue("@p_Id_Domicilio", idDomicilio);
+                        cmd.Parameters.AddWithValue("@p_Id_Domicilio", paciente.IdDomicilio);
 
-                    if (id_Pais == Guid.Empty)
+                    if (paciente.IdPais == Guid.Empty)
                         cmd.Parameters.AddWithValue("@p_Id_Pais", DBNull.Value);
                     else
-                        cmd.Parameters.AddWithValue("@p_Id_Pais", id_Pais);
+                        cmd.Parameters.AddWithValue("@p_Id_Pais", paciente.IdPais);
 
-                    cmd.Parameters.AddWithValue("@p_N_Afiliado", n_afiliado);
-                    cmd.Parameters.AddWithValue("@p_Obra_Social", obraSocial);
-                    cmd.Parameters.AddWithValue("@p_Email", email);
-                    cmd.Parameters.AddWithValue("@p_Sexo", sexo);
-                    cmd.Parameters.AddWithValue("@p_EstadoCivil", estadoCivil);
-                    cmd.Parameters.AddWithValue("@p_Ocupacion", ocupacion);
+                    cmd.Parameters.AddWithValue("@p_N_Afiliado", paciente.N_Afiliado);
+                    cmd.Parameters.AddWithValue("@p_Obra_Social", paciente.ObraSocial);
+                    cmd.Parameters.AddWithValue("@p_Email", paciente.Email);
+                    cmd.Parameters.AddWithValue("@p_Sexo", paciente.Sexo);
+                    cmd.Parameters.AddWithValue("@p_EstadoCivil", paciente.EstadoCivil);
+                    cmd.Parameters.AddWithValue("@p_Ocupacion", paciente.Ocupacion);
 
                     cmd.ExecuteNonQuery();
                 }
                 catch(MySqlException ex)
                 {
-                    throw new Exception(ex.ToString());
+                    throw new Exception("Ocurrió un error al editar el paciente", ex);
                 }
             }
         }
@@ -232,7 +233,7 @@ namespace CapaDatos
             {
                 conexion.Open();
 
-                string query = "SELECT COUNT(*) FROM Pacientes WHERE DNI = @DNI";
+                string query = "SELECT COUNT(*) FROM nutrisys.Pacientes WHERE DNI = @DNI";
 
                 MySqlCommand cmd = new MySqlCommand(query, conexion);
 

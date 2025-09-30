@@ -1,5 +1,18 @@
 # Historial de versiones sistema NutriSys
 
+## Versión [1.1.0] - 30/10/2025
+
+### Corrección
+	- Error al agregar nuevo paciente en pantalla Pacientes
+
+### Modificación
+	- Se modificaron los métodos de capa de datos y capa de negocios de Agregar y Editar Pacientes. Se le agregó una referencia a la capa de entidades a la clase Paciente
+	- Se modificó en capa de presentación los métodos de agregar y editar pacientes una instancia de la entidad Paciente y dejando así el código más legible
+
+### Agregado
+	- Nueva capa de Entidades con entidad Paciente
+	- Nuevas validaciones para el paciente en Capa de Negocios en la clase ValidarPaciente
+
 ## Version [1.0.4] - 24/08/2025
 
 ### Corrección
