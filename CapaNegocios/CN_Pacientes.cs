@@ -30,23 +30,26 @@ namespace CapaNegocios
         {
             return opacientes.FiltrarPaciente(paciente);
         }
-        public bool InsertarPaciente(Paciente paciente, out string mensaje)
+        public (bool exito, string mensaje) InsertarPaciente(Paciente paciente)
         {
             ValidarPaciente.Validar(paciente);
 
-            Guid idPaciente = Guid.NewGuid();
-            DateTime fechaRegistro = DateTime.Now;
+            var (existe, mensajeValidacion, nombrePaciente) = PacienteRegistrado(paciente.NuevoDNI);
 
-            if (opacientes.PacienteRegistrado(paciente.NuevoDNI))
+            if (existe)
             {
-                mensaje = $"El paciente con DNI {paciente.NuevoDNI} ya esta registrado en la base de datos";
-                return false;
+                return (false, mensajeValidacion);
             }
 
-            opacientes.InsertarPaciente(paciente);
+            var (exitoInsercion, mensajeInsercion) = opacientes.InsertarPaciente(paciente);
 
-            mensaje = $"El paciente {paciente.Nombre.ToUpper()} {paciente.Apellido.ToUpper()} ha sido dado de alta exitosamente en la base de datos";
-            return true;
+            if (exitoInsercion)
+            {
+                string mensaje = $"El paciente {paciente.Nombre.ToUpper()} {paciente.Apellido.ToUpper()} fue dado de alta correctamente";
+                return (true, mensaje);
+            }
+
+            return (false, mensajeInsercion);
         }
         public void EditarPaciente(Paciente paciente)
         {
@@ -59,6 +62,18 @@ namespace CapaNegocios
             paciente.DNIActual = Convert.ToInt64(dniSinPuntos);
 
             opacientes.EditarPaciente(paciente);
+        }
+        public (bool existe, string mensaje, string nomnbrePaciente) PacienteRegistrado(Int64 DNI)
+        {
+            var (existe, nombrePacienteDAL) = opacientes.PacienteRegistrado(DNI);
+
+            if (existe)
+            {
+                string mensaje = $"El paciente con DNI {DNI} ya esta registrado en la base de datos y le corresponde al paciente {nombrePacienteDAL.ToUpper()}";
+                return (true, mensaje, nombrePacienteDAL);
+            }
+
+            return (false, string.Empty, string.Empty);
         }
     }
 }

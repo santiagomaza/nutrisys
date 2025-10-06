@@ -87,7 +87,6 @@
             txtApellido = new TextBox();
             txtNombre = new TextBox();
             txtDNI = new TextBox();
-            btnBorrarBusqueda = new FontAwesome.Sharp.IconButton();
             errValidarTxtBox = new ErrorProvider(components);
             pictureBox1 = new PictureBox();
             mnsNavegación = new MenuStrip();
@@ -705,22 +704,7 @@
             txtDNI.Name = "txtDNI";
             txtDNI.Size = new Size(153, 25);
             txtDNI.TabIndex = 0;
-            // 
-            // btnBorrarBusqueda
-            // 
-            btnBorrarBusqueda.BackColor = Color.Transparent;
-            btnBorrarBusqueda.FlatAppearance.BorderSize = 0;
-            btnBorrarBusqueda.FlatStyle = FlatStyle.Flat;
-            btnBorrarBusqueda.Font = new Font("Microsoft YaHei", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnBorrarBusqueda.IconChar = FontAwesome.Sharp.IconChar.Close;
-            btnBorrarBusqueda.IconColor = Color.Black;
-            btnBorrarBusqueda.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnBorrarBusqueda.Location = new Point(342, 125);
-            btnBorrarBusqueda.Name = "btnBorrarBusqueda";
-            btnBorrarBusqueda.Size = new Size(41, 34);
-            btnBorrarBusqueda.TabIndex = 8;
-            btnBorrarBusqueda.UseVisualStyleBackColor = false;
-            btnBorrarBusqueda.Click += btnBorrarBusqueda_Click;
+            txtDNI.TextChanged += txtDNI_TextChanged;
             // 
             // errValidarTxtBox
             // 
@@ -869,7 +853,6 @@
             Controls.Add(panel1);
             Controls.Add(mnsNavegación);
             Controls.Add(pictureBox1);
-            Controls.Add(btnBorrarBusqueda);
             Controls.Add(grpAgregarPaciente);
             Controls.Add(dgvPacientes);
             Controls.Add(txtBuscarPacientes);
@@ -926,7 +909,7 @@
         private Label lblEmail;
         private Label lblObraSocial;
         private TextBox txtNAfiliado;
-        private FontAwesome.Sharp.IconButton btnBorrarBusqueda;
+        //private FontAwesome.Sharp.IconButton btnBorrarBusqueda;
         private ErrorProvider errValidarTxtBox;
         private Label LblCalle;
         private TextBox TxtCalle;

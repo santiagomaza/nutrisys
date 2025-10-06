@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CapaDatos\CapaDatos.csproj" />
     <ProjectReference Include="..\CapaEntidad\CapaEntidades.csproj" />
     <ProjectReference Include="..\CapaNegocios\CapaNegocios.csproj" />
   </ItemGroup>

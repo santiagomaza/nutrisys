@@ -34,10 +34,10 @@
             DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmAntropometria));
             grpAntropometria = new GroupBox();
+            btnEditarDatos = new Button();
             btnLimpiarInputs = new Button();
             txtTalla = new TextBox();
             lblTalla = new Label();
-            btnEditarDA = new FontAwesome.Sharp.IconButton();
             dtpFechaEvolucion = new DateTimePicker();
             txtEdadCorporal = new TextBox();
             txtPorcGC = new TextBox();
@@ -93,10 +93,10 @@
             // 
             // grpAntropometria
             // 
+            grpAntropometria.Controls.Add(btnEditarDatos);
             grpAntropometria.Controls.Add(btnLimpiarInputs);
             grpAntropometria.Controls.Add(txtTalla);
             grpAntropometria.Controls.Add(lblTalla);
-            grpAntropometria.Controls.Add(btnEditarDA);
             grpAntropometria.Controls.Add(dtpFechaEvolucion);
             grpAntropometria.Controls.Add(txtEdadCorporal);
             grpAntropometria.Controls.Add(txtPorcGC);
@@ -118,6 +118,21 @@
             grpAntropometria.Size = new Size(636, 373);
             grpAntropometria.TabIndex = 6;
             grpAntropometria.TabStop = false;
+            // 
+            // btnEditarDatos
+            // 
+            btnEditarDatos.BackColor = Color.Yellow;
+            btnEditarDatos.FlatStyle = FlatStyle.Popup;
+            btnEditarDatos.Image = Properties.Resources.edit;
+            btnEditarDatos.ImageAlign = ContentAlignment.MiddleLeft;
+            btnEditarDatos.Location = new Point(360, 262);
+            btnEditarDatos.Name = "btnEditarDatos";
+            btnEditarDatos.Size = new Size(216, 38);
+            btnEditarDatos.TabIndex = 22;
+            btnEditarDatos.Text = "Editar Dato Antropométrico";
+            btnEditarDatos.TextAlign = ContentAlignment.MiddleRight;
+            btnEditarDatos.UseVisualStyleBackColor = false;
+            btnEditarDatos.Click += btnEditarDatos_Click;
             // 
             // btnLimpiarInputs
             // 
@@ -151,24 +166,6 @@
             lblTalla.Size = new Size(60, 19);
             lblTalla.TabIndex = 19;
             lblTalla.Text = "Talla (m)";
-            // 
-            // btnEditarDA
-            // 
-            btnEditarDA.BackColor = Color.Yellow;
-            btnEditarDA.FlatStyle = FlatStyle.Flat;
-            btnEditarDA.IconChar = FontAwesome.Sharp.IconChar.Pen;
-            btnEditarDA.IconColor = Color.Black;
-            btnEditarDA.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnEditarDA.IconSize = 24;
-            btnEditarDA.ImageAlign = ContentAlignment.MiddleLeft;
-            btnEditarDA.Location = new Point(370, 262);
-            btnEditarDA.Name = "btnEditarDA";
-            btnEditarDA.Size = new Size(221, 41);
-            btnEditarDA.TabIndex = 18;
-            btnEditarDA.Text = "Editar Dato Antropométrico";
-            btnEditarDA.TextImageRelation = TextImageRelation.ImageBeforeText;
-            btnEditarDA.UseVisualStyleBackColor = false;
-            btnEditarDA.Click += BtnEditarDA_Click;
             // 
             // dtpFechaEvolucion
             // 
@@ -235,7 +232,7 @@
             btnAgregarDatos.Image = Properties.Resources.plus;
             btnAgregarDatos.Location = new Point(83, 262);
             btnAgregarDatos.Name = "btnAgregarDatos";
-            btnAgregarDatos.Size = new Size(259, 41);
+            btnAgregarDatos.Size = new Size(248, 38);
             btnAgregarDatos.TabIndex = 7;
             btnAgregarDatos.Text = "Agregar Datos Antropométricos";
             btnAgregarDatos.TextAlign = ContentAlignment.MiddleRight;
@@ -343,7 +340,7 @@
             dgvDatosAntropometricos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvDatosAntropometricos.EnableHeadersVisualStyles = false;
             dgvDatosAntropometricos.GridColor = Color.Black;
-            dgvDatosAntropometricos.Location = new Point(44, 306);
+            dgvDatosAntropometricos.Location = new Point(44, 326);
             dgvDatosAntropometricos.Name = "dgvDatosAntropometricos";
             dgvDatosAntropometricos.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -387,11 +384,10 @@
             // 
             // lblPacienteDA
             // 
-            lblPacienteDA.AutoSize = true;
             lblPacienteDA.Font = new Font("Microsoft YaHei", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblPacienteDA.Location = new Point(326, 272);
             lblPacienteDA.Name = "lblPacienteDA";
-            lblPacienteDA.Size = new Size(75, 21);
+            lblPacienteDA.Size = new Size(233, 51);
             lblPacienteDA.TabIndex = 10;
             lblPacienteDA.Text = "Paciente";
             // 
@@ -443,7 +439,7 @@
             // 
             LblFUM.AutoSize = true;
             LblFUM.Font = new Font("Microsoft YaHei", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            LblFUM.Location = new Point(44, 524);
+            LblFUM.Location = new Point(44, 534);
             LblFUM.Name = "LblFUM";
             LblFUM.Size = new Size(148, 19);
             LblFUM.TabIndex = 16;
@@ -453,7 +449,7 @@
             // 
             LblFUMod.AutoSize = true;
             LblFUMod.Font = new Font("Microsoft YaHei", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            LblFUMod.Location = new Point(191, 524);
+            LblFUMod.Location = new Point(191, 534);
             LblFUMod.Name = "LblFUMod";
             LblFUMod.Size = new Size(138, 19);
             LblFUMod.TabIndex = 17;
@@ -732,7 +728,7 @@
         private ComboBox cboPacientes;
         private Label LblFUMod;
         private Label LblFUM;
-        private FontAwesome.Sharp.IconButton btnEditarDA;
+        //private FontAwesome.Sharp.IconButton btnEditarDA;
         private PictureBox pictureBox1;
         private MenuStrip mnsNavegación;
         private ToolStripMenuItem tsrPacientes;
@@ -755,5 +751,6 @@
         private Label lblHasta;
         private DateTimePicker dtpDesde;
         private Label lblDesde;
+        private Button btnEditarDatos;
     }
 }

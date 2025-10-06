@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using CapaDatos;
+using CapaEntidades;
 
 namespace CapaNegocios
 {
@@ -20,13 +21,13 @@ namespace CapaNegocios
         {
             return antropometria.ObtenerUltimaFechaModificacion(pacienteID);
         }
-        public CapaNegocios.Enums.CodigosStatus AgregarDatoAntropometrico(Guid id, decimal? peso, decimal? talla, decimal? musculoEsqueletico, decimal? porcentajeGC, decimal? nivelGV, int? edadCorporal, DateTime fechaEvolucion, DateTime fechaUltimaModificacion, Guid id_Paciente)
+        public CapaNegocios.Enums.CodigosStatus AgregarDatoAntropometrico(DatoAntropometrico DA)
         {
-            if(peso == null || (peso > 0 && peso <= 9999.99m && Maximo2Decimales(peso)))
+            if(DA.Peso == null || (DA.Peso > 0 && DA.Peso <= 9999.99m && Maximo2Decimales(DA.Peso)))
             {
-                decimal? IMC = peso / (talla * talla);
+                DA.IMC = DA.Peso / (DA.Talla * DA.Talla);
 
-                var resultado = antropometria.AgregarDatosAntropometricos(id, peso, talla, IMC, musculoEsqueletico, porcentajeGC, nivelGV, edadCorporal, fechaEvolucion, fechaUltimaModificacion, id_Paciente);
+                var resultado = antropometria.AgregarDatosAntropometricos(DA);
 
                 return Mapeo(resultado);
             }
@@ -35,11 +36,11 @@ namespace CapaNegocios
                 throw new ArgumentException("El peso ingresado no es el correcto, debe tener 4 números enteros y 2 decimales");
             }
         }
-        public CapaNegocios.Enums.CodigosStatus EditarDatoAntropometrico(Guid idAntropometria, decimal? peso, decimal? talla, decimal? musculoEsqueletico, decimal? porcentajeGC, decimal? nivelGV, int? edadCorporal, DateTime fechaEvolucion, DateTime ultimaFechaModificacion, Guid id_Paciente)
+        public CapaNegocios.Enums.CodigosStatus EditarDatoAntropometrico(DatoAntropometrico DA)
         {
-            decimal? imc = peso / (talla * talla);
+            DA.IMC =  DA.Peso / (DA.Talla * DA.Talla);
 
-            var resultado = antropometria.EditarDatoAntropometrico(idAntropometria, peso, talla, imc, musculoEsqueletico, porcentajeGC, nivelGV, edadCorporal, fechaEvolucion, ultimaFechaModificacion, id_Paciente);
+            var resultado = antropometria.EditarDatoAntropometrico(DA);
 
             return Mapeo(resultado);
         }

@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using CapaEntidades;
 using CapaNegocios;
 using CapaNegocios.Enums;
 using CapaPresentación.Utils;
@@ -114,7 +115,7 @@ namespace CapaPresentación
                     {
                         HabilitarInputs();
 
-                        btnEditarDA.Enabled = false;
+                        btnEditarDatos.Enabled = false;
                         btnFiltrarFechas.Enabled = false;
                         txtIMC.Enabled = false;
                     }
@@ -131,7 +132,7 @@ namespace CapaPresentación
                     MostrarUltimaFechaModificacion(pacienteID);
 
                     grpAntropometria.Enabled = true;
-                    btnEditarDA.Enabled = false;
+                    btnEditarDatos.Enabled = false;
                     btnFiltrarFechas.Enabled = true;
                     txtIMC.Enabled = false;
 
@@ -298,14 +299,15 @@ namespace CapaPresentación
         }
         private void btnAgregarDatos_Click(object sender, EventArgs e)
         {
-            bool validarPeso = Validaciones.ValidacionCampos(txtPeso, errAntropometria, numerico: true);
-            bool validarTalla = Validaciones.ValidacionCampos(txtTalla, errAntropometria, numerico: true);
-            bool validarIMC = Validaciones.ValidacionCampos(txtIMC, errAntropometria, numerico: true);
-            bool validarMusculoEsqueletico = Validaciones.ValidacionCampos(txtMusculoEsqueletico, errAntropometria, numerico: true);
-            bool validarPorcentajeGrasaCorp = Validaciones.ValidacionCampos(txtPorcGC, errAntropometria, numerico: true);
-            bool validarNivelGrasaVisceral = Validaciones.ValidacionCampos(txtNivelGV, errAntropometria, numerico: true);
+            bool validarPeso = Validaciones.ValidacionCampos(txtPeso, errAntropometria, numerico: true, n_decimal: true);
+            bool validarTalla = Validaciones.ValidacionCampos(txtTalla, errAntropometria, numerico: true, n_decimal: true);
+            bool validarIMC = Validaciones.ValidacionCampos(txtIMC, errAntropometria, numerico: true, n_decimal: true);
+            bool validarMusculoEsqueletico = Validaciones.ValidacionCampos(txtMusculoEsqueletico, errAntropometria, numerico: true, n_decimal: true);
+            bool validarPorcentajeGrasaCorp = Validaciones.ValidacionCampos(txtPorcGC, errAntropometria, numerico: true, n_decimal: true);
+            bool validarNivelGrasaVisceral = Validaciones.ValidacionCampos(txtNivelGV, errAntropometria, numerico: true, n_decimal: true);
+            bool validarEdadCorporal = Validaciones.ValidacionCampos(txtEdadCorporal, errAntropometria, numerico: true, entero: true);
 
-            if (!validarPeso || !validarTalla || !validarIMC || !validarMusculoEsqueletico || !validarPorcentajeGrasaCorp || !validarNivelGrasaVisceral)
+            if (!validarPeso || !validarTalla || !validarIMC || !validarMusculoEsqueletico || !validarPorcentajeGrasaCorp || !validarNivelGrasaVisceral || !validarEdadCorporal)
             {
                 return;
             }
@@ -322,17 +324,7 @@ namespace CapaPresentación
                 return;
             }
 
-            Guid idAntropometria = Guid.NewGuid();
             Guid id_Paciente = Guid.Parse(cboPacientes.SelectedValue.ToString());
-
-            decimal? peso = string.IsNullOrWhiteSpace(txtPeso.Text) ? null : Convert.ToDecimal(txtPeso.Text.Trim());
-            decimal? talla = string.IsNullOrWhiteSpace(txtTalla.Text) ? null : Convert.ToDecimal(txtTalla.Text.Trim());
-            decimal? musculoEsqueletico = string.IsNullOrWhiteSpace(txtMusculoEsqueletico.Text) ? null : Convert.ToDecimal(txtMusculoEsqueletico.Text.Trim());
-            decimal? porcGrasaCorp = string.IsNullOrWhiteSpace(txtPorcGC.Text) ? null : Convert.ToDecimal(txtPorcGC.Text.Trim());
-            decimal? nivelGV = string.IsNullOrWhiteSpace(txtNivelGV.Text) ? null : Convert.ToDecimal(txtNivelGV.Text.Trim());
-            int? edadCorporal = string.IsNullOrWhiteSpace(txtEdadCorporal.Text) ? null : Convert.ToInt32(txtEdadCorporal.Text.Trim());
-            string? caracteres = txtBuscarPaciente.Text.Trim();
-            DateTime fechaEvolucion = dtpFechaEvolucion.Value, fechaUltimaModificacion = DateTime.Now;
 
             if (idAntropometria == null)
             {
@@ -341,7 +333,19 @@ namespace CapaPresentación
 
             try
             {
-                var resultado = antropometria.AgregarDatoAntropometrico(idAntropometria, peso, talla, musculoEsqueletico, porcGrasaCorp, nivelGV, edadCorporal, fechaEvolucion, fechaUltimaModificacion, id_Paciente);
+                DatoAntropometrico DAObj = new DatoAntropometrico(
+                    idPaciente: id_Paciente,
+                    peso: string.IsNullOrWhiteSpace(txtPeso.Text) ? null : Convert.ToDecimal(txtPeso.Text.Trim()),
+                    talla: string.IsNullOrWhiteSpace(txtTalla.Text) ? null : Convert.ToDecimal(txtTalla.Text.Trim()),
+                    imc: null,
+                    musculoEsqueletico: string.IsNullOrWhiteSpace(txtMusculoEsqueletico.Text) ? null : Convert.ToDecimal(txtMusculoEsqueletico.Text.Trim()),
+                    porcentajeGC: string.IsNullOrWhiteSpace(txtPorcGC.Text) ? null : Convert.ToDecimal(txtPorcGC.Text.Trim()),
+                    nivelGV: string.IsNullOrWhiteSpace(txtNivelGV.Text) ? null : Convert.ToDecimal(txtNivelGV.Text.Trim()),
+                    edadCorporal: string.IsNullOrWhiteSpace(txtEdadCorporal.Text) ? null : Convert.ToInt32(txtEdadCorporal.Text.Trim()),
+                    fechaEvolucion: dtpFechaEvolucion.Value
+                );
+
+                var resultado = antropometria.AgregarDatoAntropometrico(DAObj);
 
                 if (resultado == CapaNegocios.Enums.CodigosStatus.Ok)
                 {
@@ -474,7 +478,7 @@ namespace CapaPresentación
             string fechaSeleccionada = dgvDatosAntropometricos.Columns[e.ColumnIndex].HeaderText;
 
             btnAgregarDatos.Enabled = false;
-            btnEditarDA.Enabled = true;
+            btnEditarDatos.Enabled = true;
 
             foreach (DataGridViewRow fila in dgvDatosAntropometricos.Rows)
             {
@@ -515,7 +519,7 @@ namespace CapaPresentación
                 dtpFechaEvolucion.Text = fechaSeleccionada;
             }
         }
-        private void BtnEditarDA_Click(object sender, EventArgs e)
+        private void btnEditarDatos_Click(object sender, EventArgs e)
         {
             if (cboPacientes.SelectedValue == null)
             {
@@ -526,15 +530,6 @@ namespace CapaPresentación
             Guid id_Antropometria = Guid.Parse(idAntropometria);
             Guid id_Paciente = Guid.Parse(cboPacientes.SelectedValue.ToString());
 
-            decimal? peso = string.IsNullOrWhiteSpace(txtPeso.Text) ? null : Convert.ToDecimal(txtPeso.Text.Trim());
-            decimal? talla = string.IsNullOrWhiteSpace(txtTalla.Text) ? null : Convert.ToDecimal(txtTalla.Text.Trim());
-            decimal? musculoEsqueletico = string.IsNullOrWhiteSpace(txtMusculoEsqueletico.Text) ? null : Convert.ToDecimal(txtMusculoEsqueletico.Text.Trim());
-            decimal? porcGrasaCorp = string.IsNullOrWhiteSpace(txtPorcGC.Text) ? null : Convert.ToDecimal(txtPorcGC.Text.Trim());
-            decimal? nivelGV = string.IsNullOrWhiteSpace(txtNivelGV.Text) ? null : Convert.ToDecimal(txtNivelGV.Text.Trim());
-            int? edadCorporal = string.IsNullOrWhiteSpace(txtEdadCorporal.Text) ? null : Convert.ToInt32(txtEdadCorporal.Text.Trim());
-            string caracteres = txtBuscarPaciente.Text.Trim();
-            DateTime fechaEvolucion = Convert.ToDateTime(dtpFechaEvolucion.Text), ultimaFechaModificacion = DateTime.Now;
-
             try
             {
                 if (id_Antropometria == Guid.Empty)
@@ -544,7 +539,20 @@ namespace CapaPresentación
                 }
                 else
                 {
-                    var resultado = antropometria.EditarDatoAntropometrico(id_Antropometria, peso, talla, musculoEsqueletico, porcGrasaCorp, nivelGV, edadCorporal, fechaEvolucion, ultimaFechaModificacion, id_Paciente);
+                    DatoAntropometrico DAObj = new DatoAntropometrico(
+                        idDatoAntropometrico: id_Antropometria,
+                        idPaciente: id_Paciente,
+                        peso: string.IsNullOrWhiteSpace(txtPeso.Text) ? null : Convert.ToDecimal(txtPeso.Text.Trim()),
+                        talla: string.IsNullOrWhiteSpace(txtTalla.Text) ? null : Convert.ToDecimal(txtTalla.Text.Trim()),
+                        imc: null,
+                        musculoEsqueletico: string.IsNullOrWhiteSpace(txtMusculoEsqueletico.Text) ? null : Convert.ToDecimal(txtMusculoEsqueletico.Text.Trim()),
+                        porcentajeGC: string.IsNullOrWhiteSpace(txtPorcGC.Text) ? null : Convert.ToDecimal(txtPorcGC.Text.Trim()),
+                        nivelGV: string.IsNullOrWhiteSpace(txtNivelGV.Text) ? null : Convert.ToDecimal(txtNivelGV.Text.Trim()),
+                        edadCorporal: string.IsNullOrWhiteSpace(txtEdadCorporal.Text) ? null : Convert.ToInt32(txtEdadCorporal.Text.Trim()),
+                        fechaEvolucion: dtpFechaEvolucion.Value
+                    );
+
+                    var resultado = antropometria.EditarDatoAntropometrico(DAObj);
 
                     if (resultado == CapaNegocios.Enums.CodigosStatus.Ok)
                     {
@@ -555,7 +563,7 @@ namespace CapaPresentación
                         ReListarDatosAntropometricos(id_Paciente);
 
                         btnAgregarDatos.Enabled = true;
-                        btnEditarDA.Enabled = false;
+                        btnEditarDatos.Enabled = false;
                     }
                     else if (resultado == CapaNegocios.Enums.CodigosStatus.Error)
                     {
@@ -632,7 +640,7 @@ namespace CapaPresentación
             LimpiarInputs();
 
             btnAgregarDatos.Enabled = true;
-            btnEditarDA.Enabled = false;
+            btnEditarDatos.Enabled = false;
 
             dgvDatosAntropometricos.ClearSelection();
         }
@@ -647,7 +655,7 @@ namespace CapaPresentación
                 errAntropometria.SetError(txtPeso, "");
                 CalcularIMC();
             }
-                
+
         }
         private void txtTalla_TextChanged(object sender, EventArgs e)
         {

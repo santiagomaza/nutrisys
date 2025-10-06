@@ -15,27 +15,22 @@
     <Product>NutriSys</Product>
     <Description>Sistema gestor de pacientes, historias clínicas y datos antropométricos </Description>
     <Copyright>Copyright 2025 ©. Todos los derechos reservados</Copyright>
-	<Version>1.1.0</Version>
-	<AssemblyVersion>1.1.0.0</AssemblyVersion>
+	<Version>1.2.0</Version>
+	<AssemblyVersion>1.2.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <IsPublishable>True</IsPublishable>
-	<InformationalVersion>1.1.0</InformationalVersion>
+	<InformationalVersion>1.2.0</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <IsPublishable>True</IsPublishable>
-	<InformationalVersion>1.1.0</InformationalVersion>
+	<InformationalVersion>1.2.0</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="logotipo_nutrisys.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="FontAwesome.Sharp" Version="6.6.0" />
-    <PackageReference Include="Syncfusion.Pdf.WinForms" Version="29.1.40" />
   </ItemGroup>
 
   <ItemGroup>

@@ -44,7 +44,7 @@ namespace CapaDatos
             {
                 conn.Open();
 
-                string query = "SELECT UPPER(CONCAT(P.Apellido, ', ', P.Nombre)) AS Paciente, DATE_FORMAT(HC.FechaConsulta, '%d/%m/%Y') AS 'Fecha de Consulta', HC.ObservacionPlano AS 'Observación', HC.ObservacionFormateada, HC.Id_Paciente, HC.ID_HistCl, HC.FechaUltimaModificacion, HC.Ruta, CASE WHEN HC.HayArchivo IS NOT NULL AND HC.HayArchivo != 'No' THEN 'Hay archivo adjunto' ELSE 'No hay archivo adjunto' END AS Archivo FROM HistoriasClinicas AS HC JOIN Pacientes AS P ON HC.Id_Paciente = P.ID_Paciente WHERE P.ID_Paciente = @idPaciente AND HC.FechaConsulta BETWEEN @fechaInicio AND @fechaFin ORDER BY HC.FechaConsulta ASC;";
+                string query = "SELECT UPPER(CONCAT(P.Apellido, ', ', P.Nombre)) AS Paciente, DATE_FORMAT(HC.FechaConsulta, '%d/%m/%Y') AS 'Fecha de Consulta', HC.ObservacionPlano AS 'Observación', HC.ObservacionFormateada, HC.Id_Paciente, HC.ID_HistCl, HC.FechaUltimaModificacion, HC.Ruta, CASE WHEN HC.HayArchivo IS NOT NULL AND HC.HayArchivo != 'No' THEN 'Hay archivo adjunto' ELSE 'No hay archivo adjunto' END AS Archivo FROM nutrisys.HistoriasClinicas AS HC JOIN nutrisys.Pacientes AS P ON HC.Id_Paciente = P.ID_Paciente WHERE P.ID_Paciente = @idPaciente AND HC.FechaConsulta BETWEEN @fechaInicio AND @fechaFin ORDER BY HC.FechaConsulta ASC;";
 
                 MySqlCommand cmd = new(query, conn);
 
@@ -97,7 +97,7 @@ namespace CapaDatos
             {
                 conn.Open();
 
-                string query = "SELECT ObservacionFormateada FROM HistoriasClinicas WHERE ID_HistCl = @idHistCl";
+                string query = "SELECT ObservacionFormateada FROM nutrisys.HistoriasClinicas WHERE ID_HistCl = @idHistCl";
 
                 MySqlCommand cmd = new(query, conn);
 
@@ -151,7 +151,7 @@ namespace CapaDatos
             {
                 conn.Open();
 
-                string query = "UPDATE HistoriasClinicas SET Id_Paciente = @idPaciente, ObservacionPlano = @observacionPlano, ObservacionFormateada = @observacionRTF, FechaConsulta = @fechaConsulta, FechaUltimaModificacion = @fechaUM, Ruta = @rutaArchivo, HayArchivo = CASE WHEN @rutaArchivo IS NOT NULL AND @rutaArchivo != '' THEN 'Si' ELSE 'No' END WHERE ID_HistCl = @idHistCl;";
+                string query = "UPDATE nutrisys.HistoriasClinicas SET Id_Paciente = @idPaciente, ObservacionPlano = @observacionPlano, ObservacionFormateada = @observacionRTF, FechaConsulta = @fechaConsulta, FechaUltimaModificacion = @fechaUM, Ruta = @rutaArchivo, HayArchivo = CASE WHEN @rutaArchivo IS NOT NULL AND @rutaArchivo != '' THEN 'Si' ELSE 'No' END WHERE ID_HistCl = @idHistCl;";
 
                 MySqlCommand cmd = new(query, conn);
 
@@ -178,7 +178,7 @@ namespace CapaDatos
             {
                 conn.Open();
 
-                string query = "UPDATE HistoriasClinicas SET Ruta = '', HayArchivo = 'No' WHERE ID_HistCl = @idHistCl;";
+                string query = "UPDATE nutrisys.HistoriasClinicas SET Ruta = '', HayArchivo = 'No' WHERE ID_HistCl = @idHistCl;";
 
                 MySqlCommand cmd = new(query, conn);
 

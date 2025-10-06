@@ -52,6 +52,7 @@ namespace CapaPresentación
             btnFiltrarFechas.Enabled = false;
 
             BtnAbrirArchivo.Visible = false;
+            btnQuitarArchivo.Enabled = false;
             BtnVerDetalles.Visible = false;
             LblFHUM.Visible = false;
             LblFHUMod.Visible = false;
@@ -423,20 +424,15 @@ namespace CapaPresentación
         {
             string rutaCompleta = Path.Combine(Application.StartupPath, celdaRuta);
 
-            if (File.Exists(rutaCompleta))
+            try
             {
-                var psi = new ProcessStartInfo
-                {
-                    FileName = rutaCompleta,
-                    UseShellExecute = true
-                };
+                historiaClinica.Archivo(rutaCompleta);
+            }
+            catch(FileNotFoundException fnfe)
+            {
+                MessageBox.Show(fnfe.Message);
+            }
 
-                Process.Start(psi);
-            }
-            else
-            {
-                MessageBox.Show("El archivo no existe.", "NutrisysError", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
         private void btnEditarDiagnosticosHC_Click(object sender, EventArgs e)
         {
@@ -487,6 +483,8 @@ namespace CapaPresentación
                 txtTituloArchivo.Text = "";
 
                 ListarHistoriasClinicas(idPaciente);
+
+                btnQuitarArchivo.Enabled = false;
 
                 DgvHistClinicas.ClearSelection();
             }
@@ -558,7 +556,10 @@ namespace CapaPresentación
                 ruta_archivo_original = celdaRuta;
 
                 if (!string.IsNullOrWhiteSpace(celdaRuta))
+                {
                     BtnAbrirArchivo.Enabled = true;
+                    btnQuitarArchivo.Enabled = true;
+                }
             }
 
             Guid? idPaciente = Guid.Parse(DgvHistClinicas.Rows[e.RowIndex].Cells["Id_Paciente"].Value?.ToString());
@@ -612,7 +613,7 @@ namespace CapaPresentación
                 CargarDiagnosticosEnLista(diagnosticosMarcados, null, true);
             }
         }
-        private void CargarDiagnosticosEnLista(DataTable diagnosticos, DataTable? diagnosticosMarcados = null, bool marca = false)
+        private void CargarDiagnosticosEnLista(DataTable? diagnosticos, DataTable? diagnosticosMarcados = null, bool marca = false)
         {
             ClkDiagnosticos.Items.Clear();
 
@@ -773,60 +774,15 @@ namespace CapaPresentación
         }
         private void btnNegrita_Click(object sender, EventArgs e)
         {
-            if (rtfObservaciones.SelectionFont != null)
-            {
-                Font currentFont = rtfObservaciones.SelectionFont;
-                FontStyle newFontStyle;
-
-                if (currentFont.Bold)
-                {
-                    newFontStyle = currentFont.Style & ~FontStyle.Bold;
-                }
-                else
-                {
-                    newFontStyle = currentFont.Style | FontStyle.Bold;
-                }
-
-                rtfObservaciones.SelectionFont = new Font(currentFont, newFontStyle);
-            }
+            AplicarEstilos.AplicarEstilosTextbox(rtfObservaciones, FontStyle.Bold);
         }
         private void btnCursiva_Click(object sender, EventArgs e)
         {
-            if (rtfObservaciones.SelectionFont != null)
-            {
-                Font currentFont = rtfObservaciones.SelectionFont;
-                FontStyle nuevoEstilo;
-
-                if (currentFont.Italic)
-                {
-                    nuevoEstilo = currentFont.Style & ~FontStyle.Italic;
-                }
-                else
-                {
-                    nuevoEstilo = currentFont.Style | FontStyle.Italic;
-                }
-
-                rtfObservaciones.SelectionFont = new Font(currentFont, nuevoEstilo);
-            }
+            AplicarEstilos.AplicarEstilosTextbox(rtfObservaciones, FontStyle.Italic);
         }
         private void btnSubrayado_Click(object sender, EventArgs e)
         {
-            if (rtfObservaciones.SelectionFont != null)
-            {
-                Font currentFont = rtfObservaciones.SelectionFont;
-                FontStyle nuevoEstilo;
-
-                if (currentFont.Underline)
-                {
-                    nuevoEstilo = currentFont.Style & ~FontStyle.Underline;
-                }
-                else
-                {
-                    nuevoEstilo = currentFont.Style | FontStyle.Underline;
-                }
-
-                rtfObservaciones.SelectionFont = new Font(currentFont, nuevoEstilo);
-            }
+            AplicarEstilos.AplicarEstilosTextbox(rtfObservaciones, FontStyle.Underline);
         }
         private void btnColores_Click(object sender, EventArgs e)
         {
@@ -834,14 +790,7 @@ namespace CapaPresentación
             {
                 if (colorDialog.ShowDialog() == DialogResult.OK)
                 {
-                    if (rtfObservaciones.SelectionLength > 0)
-                    {
-                        rtfObservaciones.SelectionColor = colorDialog.Color;
-                    }
-                    else
-                    {
-                        rtfObservaciones.SelectionColor = colorDialog.Color;
-                    }
+                    rtfObservaciones.SelectionColor = colorDialog.Color;
                 }
             }
         }

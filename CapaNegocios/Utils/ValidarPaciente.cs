@@ -26,8 +26,6 @@ namespace CapaNegocios.Utils
             if (paciente.Telefono > maxCantDigitosTelefono)
                 throw new ArgumentException("El número de teléfono no puede contener más de 15 dígitos incluyendo el código de país.");
 
-            //if (paciente.Telefono <= 0) throw new ArgumentException("El número de telefono no puede contener dígitos negativos.");
-
             if (paciente.FechaNacimiento > DateTime.Now) throw new ArgumentException("La fecha de nacimiento no puede ser mayor a la fecha actual.");
 
             char[] caracteresEspeciales = { '$', '%', '&', '#', '!', '"', '(', ')', '=', '?', '¡', '¿', ';', ':', ',', };
@@ -54,7 +52,7 @@ namespace CapaNegocios.Utils
 
             if (!string.IsNullOrEmpty(paciente.Email) && paciente?.Email?.Length > 45) throw new ArgumentException("El email no puede tener más de 45 caracteres.");
 
-            if (!paciente.Email.Contains("@")) throw new ArgumentException("El email debe contener el @ para que sea valido");
+            if (!string.IsNullOrEmpty(paciente.Email) &&!paciente.Email.Contains("@")) throw new ArgumentException("El email debe contener el @ para que sea valido");
 
             if (paciente?.Ocupacion?.Length > 130)
                 throw new ArgumentException("La ocupación no puede tener una descripción mayor a 130 caracteres.");

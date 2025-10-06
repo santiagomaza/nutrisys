@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using CapaDatos.Enums;
 using MySql.Data.MySqlClient;
+using CapaEntidades;
 
 namespace CapaDatos
 {
@@ -104,7 +105,7 @@ namespace CapaDatos
             {
                 conn.Open();
 
-                string query = "SELECT MAX(FechaUltimaModificacion) FROM Antropometrias WHERE ID_Paciente = @idPaciente;";
+                string query = "SELECT MAX(FechaUltimaModificacion) FROM nutrisys.Antropometrias WHERE ID_Paciente = @idPaciente;";
 
                 MySqlCommand cmd = new(query, conn);
 
@@ -122,7 +123,7 @@ namespace CapaDatos
                 throw;
             }
         }
-        public CodigosStatus AgregarDatosAntropometricos(Guid id, decimal? peso, decimal? talla, decimal? IMC, decimal? musculoEsqueletico, decimal? porcentajeGC, decimal? nivelGV, int? edadCorporal, DateTime fechaEvolucion, DateTime fechaUltimaModificacion, Guid id_Paciente)
+        public CodigosStatus AgregarDatosAntropometricos(DatoAntropometrico DA)
         {
             using MySqlConnection conexion = new(ConexionBD.Cadena);
 
@@ -136,17 +137,17 @@ namespace CapaDatos
 
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@p_ID_Antropometria", id);
-                cmd.Parameters.AddWithValue("@p_Peso", peso);
-                cmd.Parameters.AddWithValue("@p_Talla", talla);
-                cmd.Parameters.AddWithValue("@p_IMC", IMC);
-                cmd.Parameters.AddWithValue("@p_MusculoEsqueletico", musculoEsqueletico);
-                cmd.Parameters.AddWithValue("@p_PorcentajeGC", porcentajeGC);
-                cmd.Parameters.AddWithValue("@p_NivelGV", nivelGV);
-                cmd.Parameters.AddWithValue("@p_EdadCorporal", edadCorporal);
-                cmd.Parameters.AddWithValue("@p_Evolucion", fechaEvolucion);
-                cmd.Parameters.AddWithValue("@p_FechaUltimaModificacion", fechaUltimaModificacion);
-                cmd.Parameters.AddWithValue("@p_ID_Paciente", id_Paciente);  
+                cmd.Parameters.AddWithValue("@p_ID_Antropometria", DA.IdDatoAntropometrico);
+                cmd.Parameters.AddWithValue("@p_Peso", DA.Peso);
+                cmd.Parameters.AddWithValue("@p_Talla", DA.Talla);
+                cmd.Parameters.AddWithValue("@p_IMC", DA.IMC);
+                cmd.Parameters.AddWithValue("@p_MusculoEsqueletico", DA.MusculoEsqueletico);
+                cmd.Parameters.AddWithValue("@p_PorcentajeGC", DA.MusculoEsqueletico);
+                cmd.Parameters.AddWithValue("@p_NivelGV", DA.NivelGV);
+                cmd.Parameters.AddWithValue("@p_EdadCorporal", DA.EdadCorporal);
+                cmd.Parameters.AddWithValue("@p_Evolucion", DA.FechaEvolucion);
+                cmd.Parameters.AddWithValue("@p_FechaUltimaModificacion", DA.FechaUltimaModificacion);
+                cmd.Parameters.AddWithValue("@p_ID_Paciente", DA.IdPaciente);  
 
                 int resultado = cmd.ExecuteNonQuery();
 
@@ -161,7 +162,7 @@ namespace CapaDatos
                 return CodigosStatus.Error;
             }
         }
-        public CodigosStatus EditarDatoAntropometrico(Guid idAntropometria, decimal? peso, decimal? talla, decimal? IMC, decimal? musculoEsqueletico, decimal? porcentajeGC, decimal? nivelGV, int? edadCorporal, DateTime fechaEvolucion, DateTime ultimaFechaModificacion, Guid id_Paciente)
+        public CodigosStatus EditarDatoAntropometrico(DatoAntropometrico DA)
         {
             using MySqlConnection conexion = new(ConexionBD.Cadena);
 
@@ -169,21 +170,21 @@ namespace CapaDatos
             {
                 conexion.Open();
 
-                string query = "UPDATE Antropometrias SET Peso = @peso, Talla = @talla, IMC = @imc, MusculoEsqueletico = @me, PorcentajeGC = @porcGC, NivelGV = @nivelGV, EdadCorporal = @edadCorp, Evolucion = @evolucion, FechaUltimaModificacion = @fechaUM, id_Paciente = @id_Paciente WHERE ID_Antropometria = @id_Ant;";
+                string query = "UPDATE nutrisys.Antropometrias SET Peso = @peso, Talla = @talla, IMC = @imc, MusculoEsqueletico = @me, PorcentajeGC = @porcGC, NivelGV = @nivelGV, EdadCorporal = @edadCorp, Evolucion = @evolucion, FechaUltimaModificacion = @fechaUM, id_Paciente = @id_Paciente WHERE ID_Antropometria = @id_Ant;";
 
                 MySqlCommand cmd = new(query, conexion);
 
-                cmd.Parameters.AddWithValue("@peso", peso);
-                cmd.Parameters.AddWithValue("@talla", talla);
-                cmd.Parameters.AddWithValue("@imc", IMC);
-                cmd.Parameters.AddWithValue("@me", musculoEsqueletico);
-                cmd.Parameters.AddWithValue("@porcGC", porcentajeGC);
-                cmd.Parameters.AddWithValue("@nivelGV", nivelGV);
-                cmd.Parameters.AddWithValue("@edadCorp", edadCorporal);
-                cmd.Parameters.AddWithValue("@evolucion", fechaEvolucion);
-                cmd.Parameters.AddWithValue("@fechaUM", ultimaFechaModificacion);
-                cmd.Parameters.AddWithValue("@id_Paciente", id_Paciente);
-                cmd.Parameters.AddWithValue("@id_Ant", idAntropometria);
+                cmd.Parameters.AddWithValue("@peso", DA.Peso);
+                cmd.Parameters.AddWithValue("@talla", DA.Talla);
+                cmd.Parameters.AddWithValue("@imc", DA.IMC);
+                cmd.Parameters.AddWithValue("@me", DA.MusculoEsqueletico);
+                cmd.Parameters.AddWithValue("@porcGC", DA.PorcentajeGC);
+                cmd.Parameters.AddWithValue("@nivelGV", DA.NivelGV);
+                cmd.Parameters.AddWithValue("@edadCorp", DA.EdadCorporal);
+                cmd.Parameters.AddWithValue("@evolucion", DA.FechaEvolucion);
+                cmd.Parameters.AddWithValue("@fechaUM", DA.FechaUltimaModificacion);
+                cmd.Parameters.AddWithValue("@id_Paciente", DA.IdPaciente);
+                cmd.Parameters.AddWithValue("@id_Ant", DA.IdDatoAntropometrico);
 
                 int resultado = cmd.ExecuteNonQuery();
 

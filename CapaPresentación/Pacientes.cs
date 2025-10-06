@@ -13,6 +13,9 @@ namespace CapaPresentación
         private readonly CN_Domicilios domicilios = new();
 
         private string? idDomicilio = string.Empty;
+
+        bool modoEdicion = false;
+        Int64 dniOriginal = 0;
         public frmPacientes()
         {
             this.AutoScaleMode = AutoScaleMode.Dpi;
@@ -219,8 +222,6 @@ namespace CapaPresentación
                     }
                 }
 
-                bool registrado;
-
                 Paciente pacienteOBJ = new Paciente(
                     DNI: Int64.Parse(txtDNI.Text.Trim()),
                     nombre: txtNombre.Text.Trim(),
@@ -237,7 +238,7 @@ namespace CapaPresentación
                     ocupacion: txtOcupacion.Text.Trim()
                 );
 
-                registrado = paciente.InsertarPaciente(pacienteOBJ, out string mensaje);
+                var (registrado, mensaje) = paciente.InsertarPaciente(pacienteOBJ);
                 MessageBox.Show(mensaje, registrado ? "NutrisysÉxito" : "NutrisysError", MessageBoxButtons.OK);
 
                 if (registrado)
@@ -252,11 +253,11 @@ namespace CapaPresentación
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "NutrisysError", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message + "\n\n" + ex.InnerException, "NutrisysError", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void dgvPacientes_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
+        { 
             if (e.RowIndex == -1)
             {
                 MessageBox.Show("Por favor seleccione una casilla correcta", "NutrisysInfo", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -282,9 +283,12 @@ namespace CapaPresentación
                     string? celdaOcupacion = fila.Cells["Ocupación"].Value?.ToString();
                     string? celdaObraSocial = fila.Cells["Obra Social"].Value.ToString();
                     string? celdaIdDomicilio = fila.Cells["Id_Domicilio"].Value?.ToString();
-                    string? dniSinPuntos = celdaDNI?.Replace(".", "");
                     DateTime celdaFecha = DateTime.Parse(fila.Cells["Fecha de Nacimiento"].Value.ToString());
 
+                    string? dniSinPuntos = celdaDNI?.Replace(".", "");
+
+                    modoEdicion = true;
+                    dniOriginal = Convert.ToInt64(dniSinPuntos);
                     string? codigoPais = CodigosPais.DetectarCodigoPais(celdaTelefono);
 
                     if (Guid.TryParse(fila.Cells["Id_Pais"].Value?.ToString(), out Guid paisGuid))
@@ -627,6 +631,32 @@ namespace CapaPresentación
             if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar))
             {
                 e.Handled = true;
+            }
+        }
+
+        private void txtDNI_TextChanged(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtDNI.Text) || !Int64.TryParse(txtDNI.Text, out Int64 dni))
+            {
+                return;
+            }
+
+            int longitudTXT = txtDNI.Text.Length;
+
+            if (longitudTXT == 7 || longitudTXT == 8)
+            {
+                if (modoEdicion && dni == dniOriginal)
+                {
+                    return;
+                }
+
+                var (pacienteYaRegistrado, mensaje, nombrePaciente) = paciente.PacienteRegistrado(dni);
+
+                if (pacienteYaRegistrado)
+                {
+                    MessageBox.Show(mensaje, "NutrisysError", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
         }
     }

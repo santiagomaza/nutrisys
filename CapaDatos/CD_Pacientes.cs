@@ -133,7 +133,7 @@ namespace CapaDatos
             }
             return pacientePAMI;
         }
-        public void InsertarPaciente(Paciente paciente)
+        public (bool exito, string mensaje) InsertarPaciente(Paciente paciente)
         {
             using (MySqlConnection conexion = new MySqlConnection(ConexionBD.Cadena))
             {
@@ -172,7 +172,14 @@ namespace CapaDatos
                     cmd.Parameters.AddWithValue("@EstadoCivil", paciente.EstadoCivil);
                     cmd.Parameters.AddWithValue("@Ocupacion", paciente.Ocupacion);
 
-                    cmd.ExecuteNonQuery();
+                    int filasAfectadas = cmd.ExecuteNonQuery();
+                    
+                    if(filasAfectadas > 0)
+                    {
+                        return (true, $"El paciente {paciente.Nombre} {paciente.Apellido} fue dado de alta correctamente en la base de datos");
+                    }
+
+                    return (false, null);
                 }
                 catch(MySqlException ex)
                 {
@@ -222,18 +229,29 @@ namespace CapaDatos
                 }
                 catch(MySqlException ex)
                 {
-                    throw new Exception("Ocurrió un error al editar el paciente", ex);
+                    if (ex.Number == 1265 || ex.Number == 1406)
+                    {
+                        if (ex.Message.Contains("Email"))
+                        {
+                            throw new Exception("El valor ingresado para el campo Email excede los 30 caracteres permitidos.");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Ocurrió un error al editar el paciente", ex);
+                    }
                 }
             }
         }
-        public bool PacienteRegistrado(Int64 dni)
+        public (bool existe, string? nombrePaciente) PacienteRegistrado(Int64 dni)
         {
             using MySqlConnection conexion = new(ConexionBD.Cadena);
+
             try
             {
                 conexion.Open();
 
-                string query = "SELECT COUNT(*) FROM nutrisys.Pacientes WHERE DNI = @DNI";
+                string query = "SELECT CONCAT(Apellido, ' ', Nombre) AS Paciente FROM nutrisys.Pacientes WHERE DNI = @DNI LIMIT 1   ;";
 
                 MySqlCommand cmd = new MySqlCommand(query, conexion);
 
@@ -241,9 +259,15 @@ namespace CapaDatos
 
                 cmd.Parameters.AddWithValue("@DNI", dni);
 
-                long count = (long)cmd.ExecuteScalar();
+                object resultado = cmd.ExecuteScalar();
 
-                return count > 0;
+                if (resultado != null)
+                {
+                    string? nombrePaciente = resultado.ToString();
+                    return (true, nombrePaciente);
+                }
+
+                return (false, string.Empty);
             }
             catch (MySqlException ex)
             {

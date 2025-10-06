@@ -1,5 +1,7 @@
-﻿using System.Data;
-using CapaDatos;
+﻿using CapaDatos;
+using System.Data;
+using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CapaNegocios
 {
@@ -43,6 +45,24 @@ namespace CapaNegocios
             }
 
             historiaClinica.BorrarArchivoDeHistoriaClinica(idHistCl);
+        }
+
+        public void Archivo(string ruta) 
+        {
+            if (File.Exists(ruta))
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = ruta,
+                    UseShellExecute = true
+                };
+
+                Process.Start(psi);
+            }
+            else
+            {
+                throw new FileNotFoundException("No se encontró el archivo en la ruta especificada", ruta);
+            }
         }
     }
 }

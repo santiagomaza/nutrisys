@@ -58,7 +58,6 @@
             lblNuevoDiagnostico = new Label();
             cboPacientes = new ComboBox();
             lblPaciente = new Label();
-            iconButton1 = new FontAwesome.Sharp.IconButton();
             lblTitulo = new Label();
             ofdPrueba = new OpenFileDialog();
             BtnAbrirArchivo = new Button();
@@ -437,19 +436,7 @@
             lblPaciente.Text = "Paciente";
             // 
             // iconButton1
-            // 
-            iconButton1.IconChar = FontAwesome.Sharp.IconChar.None;
-            iconButton1.IconColor = Color.Black;
-            iconButton1.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            iconButton1.Location = new Point(127, 31);
-            iconButton1.Name = "iconButton1";
-            iconButton1.Size = new Size(8, 9);
-            iconButton1.TabIndex = 2;
-            iconButton1.Text = "iconButton1";
-            iconButton1.UseVisualStyleBackColor = true;
-            // 
-            // lblTitulo
-            // 
+            //
             lblTitulo.AutoSize = true;
             lblTitulo.Font = new Font("Microsoft YaHei", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblTitulo.Location = new Point(436, 92);
@@ -798,7 +785,6 @@
             Controls.Add(BtnVerDetalles);
             Controls.Add(BtnAbrirArchivo);
             Controls.Add(lblTitulo);
-            Controls.Add(iconButton1);
             Controls.Add(cboPacientes);
             Controls.Add(grpHistClinicas);
             Controls.Add(DgvHistClinicas);
@@ -832,7 +818,7 @@
         private ComboBox cboPacientes;
         private Button BtnAgregarDiagnostico;
         private Button BtnAgregarHistoriaClinica;
-        private FontAwesome.Sharp.IconButton iconButton1;
+        //private FontAwesome.Sharp.IconButton iconButton1;
         private Label lblTitulo;
         private OpenFileDialog ofdPrueba;
         private Button BtnBuscarArchivo;
