@@ -42,6 +42,8 @@
             panel1 = new Panel();
             panel2 = new Panel();
             panel3 = new Panel();
+            lblTituloBienvenida = new Label();
+            lblTxtBienvenida = new Label();
             ((System.ComponentModel.ISupportInitialize)picLogoNutriSys).BeginInit();
             mnsNavegación.SuspendLayout();
             SuspendLayout();
@@ -50,7 +52,7 @@
             // 
             lblTitulo.AutoSize = true;
             lblTitulo.Font = new Font("Microsoft YaHei", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblTitulo.Location = new Point(324, 86);
+            lblTitulo.Location = new Point(325, 130);
             lblTitulo.Name = "lblTitulo";
             lblTitulo.Size = new Size(147, 41);
             lblTitulo.TabIndex = 0;
@@ -61,7 +63,7 @@
             picLogoNutriSys.BackColor = Color.Transparent;
             picLogoNutriSys.BackgroundImageLayout = ImageLayout.Stretch;
             picLogoNutriSys.Image = (Image)resources.GetObject("picLogoNutriSys.Image");
-            picLogoNutriSys.Location = new Point(273, 130);
+            picLogoNutriSys.Location = new Point(272, 174);
             picLogoNutriSys.Name = "picLogoNutriSys";
             picLogoNutriSys.Size = new Size(264, 230);
             picLogoNutriSys.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -157,14 +159,14 @@
             panel1.Dock = DockStyle.Right;
             panel1.Location = new Point(797, 75);
             panel1.Name = "panel1";
-            panel1.Size = new Size(3, 316);
+            panel1.Size = new Size(3, 353);
             panel1.TabIndex = 3;
             // 
             // panel2
             // 
             panel2.BackColor = Color.FromArgb(16, 157, 115);
             panel2.Dock = DockStyle.Bottom;
-            panel2.Location = new Point(0, 388);
+            panel2.Location = new Point(0, 425);
             panel2.Name = "panel2";
             panel2.Size = new Size(797, 3);
             panel2.TabIndex = 4;
@@ -175,15 +177,37 @@
             panel3.Dock = DockStyle.Left;
             panel3.Location = new Point(0, 75);
             panel3.Name = "panel3";
-            panel3.Size = new Size(3, 313);
+            panel3.Size = new Size(3, 350);
             panel3.TabIndex = 4;
+            // 
+            // lblTituloBienvenida
+            // 
+            lblTituloBienvenida.AutoSize = true;
+            lblTituloBienvenida.Font = new Font("Microsoft YaHei", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblTituloBienvenida.Location = new Point(307, 98);
+            lblTituloBienvenida.Name = "lblTituloBienvenida";
+            lblTituloBienvenida.Size = new Size(110, 21);
+            lblTituloBienvenida.TabIndex = 5;
+            lblTituloBienvenida.Text = "Bienvenido/a";
+            // 
+            // lblTxtBienvenida
+            // 
+            lblTxtBienvenida.AutoSize = true;
+            lblTxtBienvenida.Font = new Font("Microsoft YaHei", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblTxtBienvenida.Location = new Point(413, 98);
+            lblTxtBienvenida.Name = "lblTxtBienvenida";
+            lblTxtBienvenida.Size = new Size(59, 22);
+            lblTxtBienvenida.TabIndex = 6;
+            lblTxtBienvenida.Text = "label1";
             // 
             // frmInicio
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(800, 391);
+            ClientSize = new Size(800, 428);
+            Controls.Add(lblTxtBienvenida);
+            Controls.Add(lblTituloBienvenida);
             Controls.Add(panel3);
             Controls.Add(panel2);
             Controls.Add(panel1);
@@ -221,5 +245,7 @@
         private Panel panel3;
         private ToolStripMenuItem tsrPami;
         private ToolStripMenuItem tsrMinimizar;
+        private Label lblTituloBienvenida;
+        private Label lblTxtBienvenida;
     }
 }

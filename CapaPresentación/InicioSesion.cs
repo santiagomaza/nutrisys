@@ -1,3 +1,4 @@
+using CapaEntidades;
 using CapaNegocios;
 using CapaPresentación.Utils;
 using System.Diagnostics;
@@ -38,7 +39,14 @@ namespace CapaPresentación
 
                 if (validacion)
                 {
-                    frmInicio Inicio = new frmInicio();
+                    Usuario usuario = new();
+
+                    usuario = new Usuario
+                    {
+                        NombreUsuario = nombreUsuario
+                    };
+
+                    frmInicio Inicio = new frmInicio(usuario);
 
                     Inicio.Show();
                     this.Hide();

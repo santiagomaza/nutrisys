@@ -20,10 +20,6 @@ namespace CapaPresentación
 
         private void tsrSalir_Click(object sender, EventArgs e)
         {
-            frmInicio inicio = new();
-
-            inicio.Show();
-
             this.Hide();
         }
     }

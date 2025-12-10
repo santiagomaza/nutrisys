@@ -1,17 +1,27 @@
-﻿using CapaPresentación.Utils;
+﻿using CapaEntidades;
+using CapaPresentación.Utils;
 
 namespace CapaPresentación
 {
     public partial class frmInicio : Form
     {
+        private readonly Usuario _usuarioLogueado;
         public frmInicio()
         {
             this.AutoScaleMode = AutoScaleMode.Dpi;
             InitializeComponent();
         }
+
+        public frmInicio(Usuario usuario)
+        {
+            this.AutoScaleMode = AutoScaleMode.Dpi;
+            InitializeComponent();
+
+            _usuarioLogueado = usuario; 
+        }
         private void frmInicio_Load(object sender, EventArgs e)
         {
-
+            lblTxtBienvenida.Text = _usuarioLogueado.NombreUsuario;
         }
         private void tsrPacientes_Click(object sender, EventArgs e)
         {

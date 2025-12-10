@@ -1,4 +1,5 @@
 ﻿using CapaDatos;
+using CapaEntidades;
 
 namespace CapaNegocios
 {
@@ -12,10 +13,17 @@ namespace CapaNegocios
                 return false;
             }
 
-            if(!string.IsNullOrWhiteSpace(nombreUsuario) || !string.IsNullOrWhiteSpace(contraseña)) {
-                return usuarios.ValidarInicioSesion(nombreUsuario, contraseña);
-            }
-            return false;
+            if (string.IsNullOrWhiteSpace(nombreUsuario) || string.IsNullOrWhiteSpace(contraseña))
+                return false;
+
+            var (existe, usuarioDTO) = usuarios.ValidarInicioSesion(nombreUsuario);
+
+            if (!existe || usuarioDTO == null)
+                return false;
+
+            bool usuarioValido = BCrypt.Net.BCrypt.Verify(contraseña, usuarioDTO.ContraseñaEncriptada);
+
+            return usuarioValido;
         }
     }
 }

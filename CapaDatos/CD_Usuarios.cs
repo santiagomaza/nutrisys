@@ -1,30 +1,43 @@
 ﻿using System.Data;
+using CapaEntidades;
 using MySql.Data.MySqlClient;
 
 namespace CapaDatos
 {
     public class CD_Usuarios
     {
-        public bool ValidarInicioSesion(string nombreUsuario, string contraseña)
+        public (bool existe, Usuario usuarioDTO) ValidarInicioSesion(string nombreUsuario)
         {
+            Usuario? usuarioDTO = null;
+
             using (MySqlConnection conexion = new MySqlConnection(ConexionBD.Cadena))
             {
                 try
                 {
                     conexion.Open();
 
-                    string query = "SELECT COUNT(1) FROM Usuarios WHERE NombreUsuario = @nombreUsuario AND Contraseña = @contraseña";
+                    string query = "SELECT NombreUsuario, Contraseña FROM Usuarios WHERE NombreUsuario = @nombreUsuario;";
 
                     MySqlCommand cmd = new MySqlCommand(query, conexion);
 
                     cmd.CommandType = CommandType.Text;
 
                     cmd.Parameters.AddWithValue("@nombreUsuario", nombreUsuario);
-                    cmd.Parameters.AddWithValue("@contraseña", contraseña);
 
-                    Int64 count = (Int64)cmd.ExecuteScalar();
+                    using var reader = cmd.ExecuteReader();
 
-                    return count > 0;
+                    if (reader.Read())
+                    {
+                        usuarioDTO = new Usuario
+                        {
+                            NombreUsuario = reader.GetString("NombreUsuario"),
+                            ContraseñaEncriptada = reader.GetString("Contraseña")
+                        };
+
+                        return (true, usuarioDTO);
+                    }
+
+                    return (false, null);
                 }
                 catch (MySqlException ex)
                 {

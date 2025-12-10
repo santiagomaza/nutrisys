@@ -1,5 +1,21 @@
 # Historial de versiones sistema NutriSys
 
+## Versión [1.3.1] - 09/12/2025
+
+### Corregido
+  - Capa de Presentación - Acerca De: Se borró la instancia al formulario de `Inicio` ya que daba error debido a que no se le pasaba el objeto de `Usuario`.
+
+## Versión [1.3.0] - 09/12/2025
+
+### Agregado
+  - Capa de Presentación - Inicio: Se agregó un texto de bienvenida para el usuario y se hizo una instancia al objeto Usuario de la Capa de Entidades para poder trabajar con esos datos.
+  - Capa de Presentación - Inicio Sesión: Se agregó una instancia a la clase Usuario de la capa de entidades para poder almacenar el nombre del usuario al momento de iniciar sesión.
+  - Capa de Entidades - Usuario: Se agregó una nueva entidad llamada `Usuario` con propiedades de Nombre de Usuario y Contraseña.
+  - Capa de Negocios - CN_Usuario: Se instaló la dependencia **BCrypt.Net** para poder realizar la verificación al momento de ingresar la contraseña cuando se hace el login con la contraseña almacenada en base de datos en el método `ValidarInicioSesión()`. De esta forma, se le agrega la seguridad necesaria a la aplicación.
+  
+### Modificado
+  - Capa de Datos - CD_Usuarios: Se modificó la query de la base de datos en el método `ValidarInicioSesion()`. Además se cambió el retorno del método a una tupla de **(bool existe, Usuario usuarioDTO)**. No se trabaja más con *ExecuteScalar*, ahora se usa *ExecuteReader* y a los resultados se los guarda en la instancia del objeto Usuario.
+
 ## Versión [1.2.0] - 06/10/2025
 
 ### Agregado
